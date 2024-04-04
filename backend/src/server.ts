@@ -1,12 +1,20 @@
 import express, {Express, Request, Response} from "express";
+import authRoutes from './routes/authRoutes.js';
+
+//use env 
+import dotenv from "dotenv";
+dotenv.config();
 
 const app : Express = express();
-const port  = 8080;
+const port  = process.env.PORT;
 
-app.get('/', (req: Request, res: Response) => {
-    res.send("hello");
-})
+//middleware for parsing body
+app.use(express.json());
 
+//routes
+app.use('/', authRoutes);
+
+//listen
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
