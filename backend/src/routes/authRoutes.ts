@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import initializeDB from "../database/database.js";
+import {comparePassword, hashPassword} from "../functions/hashPassword.js";
 
 const pool = await initializeDB();
 const routes = express.Router();
@@ -56,13 +56,16 @@ routes.post("/signup", async (req: Request, res: Response) => {
           .json({ message: "Passwords entered do not match", status: 400 });
     }
 
-    // hash password
+    /* PASSWORD HASH */
+    const passwordHashed = await hashPassword(password);
 
+    /* CHECK IF USER EXISTS -> EMAIL & USERNAME */ 
 
+    /* SEND DATA TO DB */
     const connection = await pool.getConnection();
     const [result] = await connection.execute(
-      "INSERT INTO users (first_name, last_name, username, email, password, confirm_password) VALUES (?, ?, ?, ?, ?, ?)",
-      [first_name, last_name, username, email, password, confirm_password]
+      "INSERT INTO users (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)",
+      [first_name, last_name, username, email, passwordHashed]
     );
     connection.release();
     res.status(200).json({ message: "Registration successful!", status: 200 });
