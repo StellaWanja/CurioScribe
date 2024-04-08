@@ -1,5 +1,5 @@
 import express, {Express, Request, Response} from "express";
-import authRoutes from './routes/authRoutes.js';
+import userRoutes from '../userManagement/controller/userController.js';
 
 //use env 
 import dotenv from "dotenv";
@@ -12,7 +12,7 @@ const port  = process.env.PORT;
 app.use(express.json());
 
 //routes
-app.use('/', authRoutes);
+app.use('/user', userRoutes);
 
 //listen
 app.listen(port, () => {

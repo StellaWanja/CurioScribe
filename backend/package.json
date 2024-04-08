@@ -7,9 +7,9 @@
   "scripts": {
     "build": "rimraf dist && npx tsc",
     "prestart": "npm run build",
-    "start": "node dist/server.js",
+    "start": "node ./dist/application/server.js",
     "preserve": "npm run build",
-    "serve": "concurrently \"npx tsc -w\" \"nodemon ./dist/server.js\""
+    "serve": "concurrently \"npx tsc -w\" \"nodemon ./dist/application/server.js\""
   },
   "author": "",
   "license": "ISC",
