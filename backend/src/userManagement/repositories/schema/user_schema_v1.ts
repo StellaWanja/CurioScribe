@@ -12,3 +12,6 @@ export const createUsersTable = `
 `;
 
 export const addUser = `INSERT INTO users (firstName, lastName, username, email, password) VALUES (?, ?, ?, ?, ?)`;
+
+export const duplicateEmailChecker = `SELECT COUNT(*) AS count FROM users WHERE email = ?`;
+export const duplicateUsernameChecker = `SELECT COUNT(*) AS count FROM users WHERE username = ?`;

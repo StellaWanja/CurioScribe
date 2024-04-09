@@ -17,6 +17,14 @@ export const httpConstants = {
       statusCode: 400,
       statusMessage: "Passwords entered do not match",
     },
+    duplicateEmail: {
+      statusCode: 400,
+      statusMessage: "Email already exists. Kindly login"
+    },
+    duplicateName: {
+      statusCode: 400,
+      statusMessage: "Username already exists. Kindly login"
+    }
   },
   "OK": {
     signupSuccessful: {
@@ -29,3 +37,5 @@ export const httpConstants = {
     statusMessage: "Internal server error"
   }
 };
+
+
