@@ -24,7 +24,9 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.3",
     "rimraf": "^5.0.5"
   }

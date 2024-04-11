@@ -1,30 +1,34 @@
 import { Request, Response } from "express";
 import { User } from "../models/userModel.js";
 import { hashPassword } from "../utils/hashPassword.js";
-import { validateInputs } from "../utils/validateInputs.js";
+import {
+  validateLoginInputs,
+  validateSignupInputs,
+} from "../utils/validateInputs.js";
 import { addUserToDB } from "../repositories/addUser.js";
 import { httpConstants } from "../utils/httpConstants.js";
-import { checkDuplicateEmail, checkDuplicateUsername } from "../repositories/duplicateChecker.js";
-
+import {
+  checkEmailExists,
+  checkUsernameExists,
+} from "../repositories/userExistsChecker.js";
+import { getUserDetailsFromDB } from "../repositories/getUser.js";
+import { generateToken } from "../utils/generateToken.js";
 
 export const signup = async (req: Request, res: Response) => {
   try {
     const userData: User = req.body;
 
     // validate data
-    const validation = await validateInputs(userData, res);
-    if(!validation.success){
+    const validation = await validateSignupInputs(userData, res);
+    if (!validation.success) {
       return res.send(validation.error);
     }
-    
+
     // duplicate check
-    const duplicateEmail = await checkDuplicateEmail(userData);     
-    if(duplicateEmail){
-      return res.send(httpConstants["Bad Request"].duplicateEmail);
-    }
-    const duplicateUsername = await checkDuplicateUsername(userData);     
-    if(duplicateUsername){
-      return res.send(httpConstants["Bad Request"].duplicateName);
+    const duplicateEmail = await checkEmailExists(userData);
+    const duplicateUsername = await checkUsernameExists(userData);
+    if (duplicateEmail || duplicateUsername) {
+      return res.send(httpConstants[400].existingUser);
     }
 
     // hash password
@@ -32,9 +36,58 @@ export const signup = async (req: Request, res: Response) => {
 
     // send data to db
     await addUserToDB(userData, passwordHashed);
-    return res.send(httpConstants.OK.signupSuccessful);
+
+    // get user details
+    const userInfo = await getUserDetailsFromDB(userData, res);
+
+    // create jwt
+    const token = await generateToken(userInfo);
+
+    // login and set token in header
+    res.setHeader("Authorization", `Bearer ${token}`);
+
+    return res.send(httpConstants[200].signupSuccessful);
   } catch (error) {
     console.error("Error signing up:", error);
+    return res.send(httpConstants[500]);
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const userData: User = req.body;
+
+    // validate data
+    const validation = await validateLoginInputs(userData, res);
+    if (!validation.success) {
+      return res.send(validation.error);
+    }
+
+    // check if user exists
+    const emailExists = await checkEmailExists(userData);
+    if (!emailExists) {
+      return res.send(httpConstants[400].userUnidentified);
+    }
+
+    // get user details
+    const userInfo = await getUserDetailsFromDB(userData, res);
+
+    // create jwt
+    const token = await generateToken(userInfo);
+
+    // login and set token in header
+    res.setHeader("Authorization", `Bearer ${token}`);
+    return res.send(httpConstants[200].loginSuccessful);
+  } catch (error) {
+    console.error("Error logging in:", error);
     return res.send(httpConstants["Server error"]);
   }
 };
+
+export const userProfile = async (req: Request, res: Response) => {
+  try {
+    
+  } catch (error) {
+    return res.send(httpConstants["Server error"]);
+  }
+}

@@ -18,6 +18,11 @@ const hasNullValues = (userData: User): boolean => {
   return requiredFields.some((field) => !userData[field]);
 };
 
+const hasLoginNullValues = (userData: User): boolean => {
+  const requiredFields: (keyof User)[] = ["email", "password"]; // Define required fields here
+  return requiredFields.some((field) => !userData[field]);
+};
+
 const emailIsInvalid = (userData: User): boolean => {
   const { email }: User = userData;
   return !emailRegex.test(email);
@@ -33,24 +38,24 @@ const passwordMatch = (userData: User): boolean => {
   return password !== confirmPassword;
 };
 
-export const validateInputs = async (
+export const validateSignupInputs = async (
   userData: User,
   res: Response
 ): Promise<{
   success: boolean;
-  error?: { statusCode: number; statusMessage: string };
+  error?: { statusMessage: string };
 }> => {
   try {
     // null values
     if (hasNullValues(userData)) {
-      return { success: false, error: httpConstants["Bad Request"].nullValues };
+      return { success: false, error: httpConstants[400].nullValues };
     }
 
     // invalid email
     if (emailIsInvalid(userData)) {
       return {
         success: false,
-        error: httpConstants["Bad Request"].invalidEmail,
+        error: httpConstants[400].invalidEmail,
       };
     }
 
@@ -58,7 +63,7 @@ export const validateInputs = async (
     if (passwordIsInvalid(userData)) {
       return {
         success: false,
-        error: httpConstants["Bad Request"].invalidPassword,
+        error: httpConstants[400].invalidPassword,
       };
     }
 
@@ -66,10 +71,43 @@ export const validateInputs = async (
     if (passwordMatch(userData)) {
       return {
         success: false,
-        error: httpConstants["Bad Request"].mismatchingPasswords,
+        error: httpConstants[400].mismatchingPasswords,
+      };
+    }
+    return { success: true };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const validateLoginInputs = async (
+  userData: User,
+  res: Response
+): Promise<{
+  success: boolean;
+  error?: { statusMessage: string };
+}> => {
+  try {
+    // invalid email
+    if (emailIsInvalid(userData)) {
+      return {
+        success: false,
+        error: httpConstants[400].invalidEmail,
       };
     }
 
+    // null values
+    if (hasLoginNullValues(userData)) {
+      return { success: false, error: httpConstants[400].nullValues };
+    }
+
+    // invalid password
+    if (passwordIsInvalid(userData)) {
+      return {
+        success: false,
+        error: httpConstants[400].invalidPassword,
+      };
+    }
     return { success: true };
   } catch (error) {
     throw new Error(error);

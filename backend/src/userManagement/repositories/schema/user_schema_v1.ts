@@ -15,3 +15,5 @@ export const addUser = `INSERT INTO users (firstName, lastName, username, email,
 
 export const duplicateEmailChecker = `SELECT COUNT(*) AS count FROM users WHERE email = ?`;
 export const duplicateUsernameChecker = `SELECT COUNT(*) AS count FROM users WHERE username = ?`;
+
+export const getUserDetails = `SELECT * FROM users WHERE email = ?`;

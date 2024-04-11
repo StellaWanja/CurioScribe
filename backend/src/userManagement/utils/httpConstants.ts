@@ -1,41 +1,42 @@
 export const httpConstants = {
-  "Bad Request": {
+  400: {
     nullValues: {
-      statusCode: 400,
       statusMessage: "Please fill in the required fields",
     },
     invalidEmail: {
-      statusCode: 400,
       statusMessage: "Please enter a valid email address",
     },
     invalidPassword: {
-      statusCode: 400,
       statusMessage:
         "Password must be at least 8 characters long with at least 1 digit, a special character, an uppercase letter, and a lowercase letter",
     },
     mismatchingPasswords: {
-      statusCode: 400,
       statusMessage: "Passwords entered do not match",
     },
-    duplicateEmail: {
-      statusCode: 400,
-      statusMessage: "Email already exists. Kindly login"
+    existingUser: {
+      statusMessage: "User already exists. Kindly login",
     },
-    duplicateName: {
-      statusCode: 400,
-      statusMessage: "Username already exists. Kindly login"
+    userUnidentified: {
+      statusMessage: "User not found. Kindly signup",
+    },
+    loginError: {
+      statusMessage: "Invalid credentials",
+    },
+  },
+  401: {
+    unauthorizedAccess: {
+      statusMessage: "Unauthorized access"
     }
   },
-  "OK": {
+  200: {
     signupSuccessful: {
-      statusCode: 200,
       statusMessage: "Signup successful!",
     },
+    loginSuccessful: {
+      statusMessage: "Login successful!",
+    }
   },
-  "Server error": {
-    statusCode: 500,
-    statusMessage: "Internal server error"
-  }
+  500: {
+    statusMessage: "Internal server error",
+  },
 };
-
-

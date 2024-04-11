@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { signup } from "../services/userService.js";
+import { login, signup, userProfile } from "../services/userService.js";
 
 const routes = Router();
 
-// signup route
 routes.post('/signup', signup);
+routes.post('/login', login);
+routes.post('/user-profile', userProfile);
 
 export default routes;
