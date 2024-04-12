@@ -17,3 +17,4 @@ export const duplicateEmailChecker = `SELECT COUNT(*) AS count FROM users WHERE 
 export const duplicateUsernameChecker = `SELECT COUNT(*) AS count FROM users WHERE username = ?`;
 
 export const getUserDetails = `SELECT * FROM users WHERE email = ?`;
+export const getUserDetailsWithId = `SELECT * FROM users WHERE id = ?`;

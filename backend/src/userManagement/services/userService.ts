@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/userModel.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import {
+  validateEmail,
   validateLoginInputs,
   validateSignupInputs,
 } from "../utils/validateInputs.js";
@@ -11,7 +12,10 @@ import {
   checkEmailExists,
   checkUsernameExists,
 } from "../repositories/userExistsChecker.js";
-import { getUserDetailsFromDB } from "../repositories/getUser.js";
+import {
+  getUserDetailsFromDB,
+  getUserDetailsUsingId,
+} from "../repositories/getUser.js";
 import { generateToken } from "../utils/generateToken.js";
 
 export const signup = async (req: Request, res: Response) => {
@@ -19,7 +23,7 @@ export const signup = async (req: Request, res: Response) => {
     const userData: User = req.body;
 
     // validate data
-    const validation = await validateSignupInputs(userData, res);
+    const validation = await validateSignupInputs(userData);
     if (!validation.success) {
       return res.send(validation.error);
     }
@@ -58,7 +62,7 @@ export const login = async (req: Request, res: Response) => {
     const userData: User = req.body;
 
     // validate data
-    const validation = await validateLoginInputs(userData, res);
+    const validation = await validateLoginInputs(userData);
     if (!validation.success) {
       return res.send(validation.error);
     }
@@ -86,8 +90,40 @@ export const login = async (req: Request, res: Response) => {
 
 export const userProfile = async (req: Request, res: Response) => {
   try {
+    const token = req.headers.authorization;
+    const userId = req.query.id;
+
+    if (!token || !token.startsWith("Bearer ") || !userId) {
+      return res.send(httpConstants[401].unauthorizedAccess);
+    }
+
+    // get user details
+    const userInfo = await getUserDetailsUsingId(userId, res);
+
+    return res.send(userInfo);
+  } catch (error) {
+    return res.send(httpConstants["Server error"]);
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const userEmail = req.body;   
+
+    // validate data
+    const validation = await validateEmail(userEmail);
+    if (!validation.success) {
+      return res.send(validation.error);
+    }
+
+    // check if user exists
+    const emailExists = await checkEmailExists(userEmail);    
+    if (!emailExists) {
+      return res.send(httpConstants[400].userUnidentified);
+    }
+
     
   } catch (error) {
     return res.send(httpConstants["Server error"]);
   }
-}
+};

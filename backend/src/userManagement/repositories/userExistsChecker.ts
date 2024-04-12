@@ -10,7 +10,9 @@ const connection = await pool.getConnection();
 
 export const checkEmailExists = async (userData: User): Promise<boolean> => {
   try {
+    console.log(userData);
     const { email }: User = userData;
+    
     const results = await connection.query(duplicateEmailChecker, [email]);
 
     const row = results[0];

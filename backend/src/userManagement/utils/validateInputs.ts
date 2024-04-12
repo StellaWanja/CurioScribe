@@ -23,6 +23,11 @@ const hasLoginNullValues = (userData: User): boolean => {
   return requiredFields.some((field) => !userData[field]);
 };
 
+const hasEmailNullValues = (userData: User): boolean => {
+  const requiredFields: (keyof User)[] = ["email"]; // Define required fields here
+  return requiredFields.some((field) => !userData[field]);
+};
+
 const emailIsInvalid = (userData: User): boolean => {
   const { email }: User = userData;
   return !emailRegex.test(email);
@@ -40,7 +45,6 @@ const passwordMatch = (userData: User): boolean => {
 
 export const validateSignupInputs = async (
   userData: User,
-  res: Response
 ): Promise<{
   success: boolean;
   error?: { statusMessage: string };
@@ -82,7 +86,6 @@ export const validateSignupInputs = async (
 
 export const validateLoginInputs = async (
   userData: User,
-  res: Response
 ): Promise<{
   success: boolean;
   error?: { statusMessage: string };
@@ -113,3 +116,29 @@ export const validateLoginInputs = async (
     throw new Error(error);
   }
 };
+
+export const validateEmail = async (
+  userEmail: User,
+): Promise<{
+  success: boolean;
+  error?: { statusMessage: string };
+}> => {
+  try {    
+    // null values
+    if (hasEmailNullValues(userEmail)) {
+      return { success: false, error: httpConstants[400].nullValues };
+    }
+
+    // invalid email
+    if (emailIsInvalid(userEmail)) {
+      return {
+        success: false,
+        error: httpConstants[400].invalidEmail,
+      };
+    }
+    return { success: true };
+
+  } catch (error) {
+    throw new Error(error);
+  }
+}
