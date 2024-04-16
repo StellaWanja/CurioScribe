@@ -1,21 +1,19 @@
 import { Request, Response } from "express";
+import crypto from 'crypto';
 import { User } from "../models/userModel.js";
-import { hashPassword } from "../utils/hashPassword.js";
 import {
   validateEmail,
   validateLoginInputs,
   validateSignupInputs,
 } from "../utils/validateInputs.js";
-import { addUserToDB } from "../repositories/addUser.js";
-import { httpConstants } from "../utils/httpConstants.js";
 import {
   checkEmailExists,
   checkUsernameExists,
-} from "../repositories/userExistsChecker.js";
-import {
-  getUserDetailsFromDB,
-  getUserDetailsUsingId,
-} from "../repositories/getUser.js";
+} from "../utils/userExistsChecker.js";
+import { httpConstants } from "../utils/httpConstants.js";
+import { hashPassword } from "../utils/hashPassword.js";
+import { addUserToDB } from "../repositories/addUser.js";
+import { getUserDetailsFromDB } from "../repositories/getUser.js";
 import { generateToken } from "../utils/generateToken.js";
 
 export const signup = async (req: Request, res: Response) => {
@@ -88,27 +86,9 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const userProfile = async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization;
-    const userId = req.query.id;
-
-    if (!token || !token.startsWith("Bearer ") || !userId) {
-      return res.send(httpConstants[401].unauthorizedAccess);
-    }
-
-    // get user details
-    const userInfo = await getUserDetailsUsingId(userId, res);
-
-    return res.send(userInfo);
-  } catch (error) {
-    return res.send(httpConstants["Server error"]);
-  }
-};
-
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
-    const userEmail = req.body;   
+    const userEmail = req.body;
 
     // validate data
     const validation = await validateEmail(userEmail);
@@ -117,12 +97,13 @@ export const forgotPassword = async (req: Request, res: Response) => {
     }
 
     // check if user exists
-    const emailExists = await checkEmailExists(userEmail);    
+    const emailExists = await checkEmailExists(userEmail);
     if (!emailExists) {
       return res.send(httpConstants[400].userUnidentified);
     }
 
-    
+    // Generate a reset token
+    const token = crypto.randomBytes(20).toString("hex");
   } catch (error) {
     return res.send(httpConstants["Server error"]);
   }

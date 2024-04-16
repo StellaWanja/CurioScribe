@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { forgotPassword, login, signup, userProfile } from "../services/userService.js";
+import { signup, login, forgotPassword } from "../services/authService.js";
+import { userProfile } from "../services/profileService.js";
 import { verifyToken } from "../utils/verifyToken.js";
 
 const routes = Router();

@@ -3,14 +3,13 @@ import { User } from "../models/userModel.js";
 import {
   duplicateEmailChecker,
   duplicateUsernameChecker,
-} from "./schema/user_schema_v1.js";
+} from "../repositories/schema/user_schema_v1.js";
 
 const pool = await initializeDB();
 const connection = await pool.getConnection();
 
 export const checkEmailExists = async (userData: User): Promise<boolean> => {
   try {
-    console.log(userData);
     const { email }: User = userData;
     
     const results = await connection.query(duplicateEmailChecker, [email]);
