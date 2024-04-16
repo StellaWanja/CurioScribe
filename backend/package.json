@@ -28,6 +28,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.3",
+    "nodemailer": "^6.9.13",
     "rimraf": "^5.0.5"
   }
 }

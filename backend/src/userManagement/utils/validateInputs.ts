@@ -27,6 +27,10 @@ const hasEmailNullValues = (userData: User): boolean => {
   const requiredFields: (keyof User)[] = ["email"]; // Define required fields here
   return requiredFields.some((field) => !userData[field]);
 };
+const hasPasswordNullValues = (userData: User): boolean => {
+  const requiredFields: (keyof User)[] = ["password", "confirmPassword"]; // Define required fields here
+  return requiredFields.some((field) => !userData[field]);
+};
 
 const emailIsInvalid = (userData: User): boolean => {
   const { email }: User = userData;
@@ -44,7 +48,7 @@ const passwordMatch = (userData: User): boolean => {
 };
 
 export const validateSignupInputs = async (
-  userData: User,
+  userData: User
 ): Promise<{
   success: boolean;
   error?: { statusMessage: string };
@@ -85,7 +89,7 @@ export const validateSignupInputs = async (
 };
 
 export const validateLoginInputs = async (
-  userData: User,
+  userData: User
 ): Promise<{
   success: boolean;
   error?: { statusMessage: string };
@@ -118,12 +122,12 @@ export const validateLoginInputs = async (
 };
 
 export const validateEmail = async (
-  userEmail: User,
+  userEmail: User
 ): Promise<{
   success: boolean;
   error?: { statusMessage: string };
 }> => {
-  try {    
+  try {
     // null values
     if (hasEmailNullValues(userEmail)) {
       return { success: false, error: httpConstants[400].nullValues };
@@ -137,8 +141,40 @@ export const validateEmail = async (
       };
     }
     return { success: true };
-
   } catch (error) {
     throw new Error(error);
   }
-}
+};
+
+export const validatePasswords = async (
+  passwords: User
+): Promise<{
+  success: boolean;
+  error?: { statusMessage: string };
+}> => {
+  try {
+    // null values
+    if (hasPasswordNullValues(passwords)) {
+      return { success: false, error: httpConstants[400].nullValues };
+    }
+
+    // invalid email
+    if (passwordIsInvalid(passwords)) {
+      return {
+        success: false,
+        error: httpConstants[400].invalidPassword,
+      };
+    }
+
+    // passwords don't match
+    if (passwordMatch(passwords)) {
+      return {
+        success: false,
+        error: httpConstants[400].mismatchingPasswords,
+      };
+    }
+    return { success: true };
+  } catch (error) {
+    throw new Error(error);
+  }
+};

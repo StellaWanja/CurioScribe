@@ -22,11 +22,14 @@ export const httpConstants = {
     loginError: {
       statusMessage: "Invalid credentials",
     },
+    otpError: {
+      statusMessage: "Invalid or expired OTP"
+    }
   },
   401: {
     unauthorizedAccess: {
-      statusMessage: "Unauthorized access"
-    }
+      statusMessage: "Unauthorized access",
+    },
   },
   200: {
     signupSuccessful: {
@@ -34,9 +37,19 @@ export const httpConstants = {
     },
     loginSuccessful: {
       statusMessage: "Login successful!",
+    },
+    resetEmailSent: {
+      statusMessage:
+        "Check your email for instructions on resetting your password",
+    },
+    passwordReset: {
+      statusMessage: "Password reset successful"
     }
   },
   500: {
     statusMessage: "Internal server error",
+    sendingResetEmail: {
+      statusMessage: "Error sending email",
+    },
   },
 };

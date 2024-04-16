@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import crypto from 'crypto';
+import crypto from "crypto";
 import { User } from "../models/userModel.js";
 import {
   validateEmail,
   validateLoginInputs,
+  validatePasswords,
   validateSignupInputs,
 } from "../utils/validateInputs.js";
 import {
@@ -15,6 +16,10 @@ import { hashPassword } from "../utils/hashPassword.js";
 import { addUserToDB } from "../repositories/addUser.js";
 import { getUserDetailsFromDB } from "../repositories/getUser.js";
 import { generateToken } from "../utils/generateToken.js";
+import {
+  sendPasswordResetLink,
+  updatePassword,
+} from "../repositories/resetPassword.js";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -73,6 +78,7 @@ export const login = async (req: Request, res: Response) => {
 
     // get user details
     const userInfo = await getUserDetailsFromDB(userData, res);
+    if (userInfo[0] === undefined) return;
 
     // create jwt
     const token = await generateToken(userInfo);
@@ -103,7 +109,34 @@ export const forgotPassword = async (req: Request, res: Response) => {
     }
 
     // Generate a reset token
-    const token = crypto.randomBytes(20).toString("hex");
+    const otp = crypto.randomBytes(20).toString("hex");
+
+    const otpExpiry = new Date();
+    otpExpiry.setHours(otpExpiry.getHours() + 1); // Token expires in 1 hour
+
+    await sendPasswordResetLink(otp, otpExpiry, userEmail, res);
+  } catch (error) {
+    return res.send(httpConstants["Server error"]);
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const passwords = req.body;
+    const otpToken = req.query.token;
+
+    // validate data
+    const validation = await validatePasswords(passwords);
+    if (!validation.success) {
+      return res.send(validation.error);
+    }
+
+    // hash password
+    const passwordHashed = await hashPassword(passwords);
+
+    await updatePassword(passwordHashed, otpToken, res);
+
+    return res.send(httpConstants[200].passwordReset);
   } catch (error) {
     return res.send(httpConstants["Server error"]);
   }

@@ -19,10 +19,11 @@ export const getUserDetailsFromDB = async (userData: User, res: Response) => {
     // check if passwords match and if they don't return error
     const passwordsMatch = await comparePassword(password, data[0]["password"]);
     if (!passwordsMatch) {
-      return res.send(httpConstants[400].loginError);
+     return res.send(httpConstants[400].loginError);
     }
 
     connection.release();
+    
     return data;
   } catch (error) {
     throw new Error(error);
@@ -38,7 +39,7 @@ export const getUserDetailsUsingId = async (userId: string | ParsedQs | string[]
 
     if(rows === null || rows === undefined){
       return res.send(httpConstants[400].userUnidentified)
-    }
+    }    
     
     connection.release();
     return data;
