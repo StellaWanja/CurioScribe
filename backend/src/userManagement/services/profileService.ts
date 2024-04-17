@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { httpConstants } from "../utils/httpConstants.js";
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_MESSAGES, HTTP_STATUS_UNAUTHORIZED_ACCESS } from "../utils/httpConstants.js";
 import { getUserDetailsUsingId } from "../repositories/getUser.js";
 
 export const userProfile = async (req: Request, res: Response) => {
@@ -8,7 +8,7 @@ export const userProfile = async (req: Request, res: Response) => {
     const userId = req.query.id;
 
     if (!token || !token.startsWith("Bearer ") || !userId) {
-      return res.send(httpConstants[401].unauthorizedAccess);
+      return res.status(HTTP_STATUS_UNAUTHORIZED_ACCESS).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_UNAUTHORIZED_ACCESS]);
     }
 
     // get user details
@@ -16,7 +16,7 @@ export const userProfile = async (req: Request, res: Response) => {
 
     return res.send(userInfo);
   } catch (error) {
-    return res.send(httpConstants["Server error"]);
+    return res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
   }
 };
 

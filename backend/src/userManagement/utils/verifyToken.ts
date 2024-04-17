@@ -1,5 +1,9 @@
 import jwt from "jsonwebtoken";
-import { httpConstants } from "./httpConstants.js";
+import {
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_MESSAGES,
+  HTTP_STATUS_UNAUTHORIZED_ACCESS,
+} from "./httpConstants.js";
 
 // Middleware to verify the Bearer token and get the user's ID
 export const verifyToken = async (req, res, next) => {
@@ -7,7 +11,9 @@ export const verifyToken = async (req, res, next) => {
     const token = req.headers.authorization; // Get the Bearer token from the Authorization header
 
     if (!token || !token.startsWith("Bearer ")) {
-      return res.send(httpConstants[401].unauthorizedAccess);
+      return res
+        .status(HTTP_STATUS_UNAUTHORIZED_ACCESS)
+        .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_UNAUTHORIZED_ACCESS]);
     }
 
     const tokenValue = token.replace("Bearer ", "");
@@ -15,6 +21,8 @@ export const verifyToken = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.send(httpConstants[401].unauthorizedAccess);
+    return res
+      .status(HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
   }
 };

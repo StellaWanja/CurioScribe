@@ -1,6 +1,9 @@
 import { Response } from "express";
 import { User } from "../models/userModel.js";
-import { httpConstants } from "./httpConstants.js";
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_MESSAGES,
+} from "./httpConstants.js";
 
 const emailRegex = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9]+\.[A-Za-z]/;
 const passwordRegex =
@@ -51,19 +54,28 @@ export const validateSignupInputs = async (
   userData: User
 ): Promise<{
   success: boolean;
-  error?: { statusMessage: string };
+  error?: { status: number; message: string };
 }> => {
   try {
     // null values
     if (hasNullValues(userData)) {
-      return { success: false, error: httpConstants[400].nullValues };
+      return {
+        success: false,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
+      };
     }
 
     // invalid email
     if (emailIsInvalid(userData)) {
       return {
         success: false,
-        error: httpConstants[400].invalidEmail,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
 
@@ -71,7 +83,10 @@ export const validateSignupInputs = async (
     if (passwordIsInvalid(userData)) {
       return {
         success: false,
-        error: httpConstants[400].invalidPassword,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
 
@@ -79,7 +94,10 @@ export const validateSignupInputs = async (
     if (passwordMatch(userData)) {
       return {
         success: false,
-        error: httpConstants[400].mismatchingPasswords,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
     return { success: true };
@@ -92,27 +110,39 @@ export const validateLoginInputs = async (
   userData: User
 ): Promise<{
   success: boolean;
-  error?: { statusMessage: string };
+  error?: { status: number; message: string };
 }> => {
   try {
     // invalid email
     if (emailIsInvalid(userData)) {
       return {
         success: false,
-        error: httpConstants[400].invalidEmail,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
 
     // null values
     if (hasLoginNullValues(userData)) {
-      return { success: false, error: httpConstants[400].nullValues };
+      return {
+        success: false,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
+      };
     }
 
     // invalid password
     if (passwordIsInvalid(userData)) {
       return {
         success: false,
-        error: httpConstants[400].invalidPassword,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
     return { success: true };
@@ -125,19 +155,28 @@ export const validateEmail = async (
   userEmail: User
 ): Promise<{
   success: boolean;
-  error?: { statusMessage: string };
+  error?: { status: number; message: string };
 }> => {
   try {
     // null values
     if (hasEmailNullValues(userEmail)) {
-      return { success: false, error: httpConstants[400].nullValues };
+      return {
+        success: false,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
+      };
     }
 
     // invalid email
     if (emailIsInvalid(userEmail)) {
       return {
         success: false,
-        error: httpConstants[400].invalidEmail,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
     return { success: true };
@@ -150,19 +189,28 @@ export const validatePasswords = async (
   passwords: User
 ): Promise<{
   success: boolean;
-  error?: { statusMessage: string };
+  error?: { status: number; message: string };
 }> => {
   try {
     // null values
     if (hasPasswordNullValues(passwords)) {
-      return { success: false, error: httpConstants[400].nullValues };
+      return {
+        success: false,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
+      };
     }
 
     // invalid email
     if (passwordIsInvalid(passwords)) {
       return {
         success: false,
-        error: httpConstants[400].invalidPassword,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
 
@@ -170,7 +218,10 @@ export const validatePasswords = async (
     if (passwordMatch(passwords)) {
       return {
         success: false,
-        error: httpConstants[400].mismatchingPasswords,
+        error: {
+          status: HTTP_STATUS_BAD_REQUEST,
+          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+        },
       };
     }
     return { success: true };

@@ -11,7 +11,7 @@ import {
   checkEmailExists,
   checkUsernameExists,
 } from "../utils/userExistsChecker.js";
-import { httpConstants } from "../utils/httpConstants.js";
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_MESSAGES, HTTP_STATUS_OK } from "../utils/httpConstants.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import { addUserToDB } from "../repositories/addUser.js";
 import { getUserDetailsFromDB } from "../repositories/getUser.js";
@@ -35,7 +35,7 @@ export const signup = async (req: Request, res: Response) => {
     const duplicateEmail = await checkEmailExists(userData);
     const duplicateUsername = await checkUsernameExists(userData);
     if (duplicateEmail || duplicateUsername) {
-      return res.send(httpConstants[400].existingUser);
+      return res.status(HTTP_STATUS_BAD_REQUEST).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     }
 
     // hash password
@@ -53,10 +53,10 @@ export const signup = async (req: Request, res: Response) => {
     // login and set token in header
     res.setHeader("Authorization", `Bearer ${token}`);
 
-    return res.send(httpConstants[200].signupSuccessful);
+    return res.status(HTTP_STATUS_OK).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_OK]);
   } catch (error) {
     console.error("Error signing up:", error);
-    return res.send(httpConstants[500]);
+    return res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
   }
 };
 
@@ -73,7 +73,7 @@ export const login = async (req: Request, res: Response) => {
     // check if user exists
     const emailExists = await checkEmailExists(userData);
     if (!emailExists) {
-      return res.send(httpConstants[400].userUnidentified);
+      return res.status(HTTP_STATUS_BAD_REQUEST).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     }
 
     // get user details
@@ -85,10 +85,10 @@ export const login = async (req: Request, res: Response) => {
 
     // login and set token in header
     res.setHeader("Authorization", `Bearer ${token}`);
-    return res.send(httpConstants[200].loginSuccessful);
+    return res.status(HTTP_STATUS_OK).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_OK]);
   } catch (error) {
     console.error("Error logging in:", error);
-    return res.send(httpConstants["Server error"]);
+    return res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(HTTP_STATUS_INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -105,7 +105,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     // check if user exists
     const emailExists = await checkEmailExists(userEmail);
     if (!emailExists) {
-      return res.send(httpConstants[400].userUnidentified);
+      return res.status(HTTP_STATUS_BAD_REQUEST).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     }
 
     // Generate a reset token
@@ -116,7 +116,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     await sendPasswordResetLink(otp, otpExpiry, userEmail, res);
   } catch (error) {
-    return res.send(httpConstants["Server error"]);
+    return res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(HTTP_STATUS_INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -136,8 +136,8 @@ export const resetPassword = async (req: Request, res: Response) => {
 
     await updatePassword(passwordHashed, otpToken, res);
 
-    return res.send(httpConstants[200].passwordReset);
+    return res.status(HTTP_STATUS_OK).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_OK]);
   } catch (error) {
-    return res.send(httpConstants["Server error"]);
+    return res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
   }
 };

@@ -8,7 +8,7 @@ import {
   resetPassword,
   updateUserOTP,
 } from "./schema/user_schema_v1.js";
-import { httpConstants } from "../utils/httpConstants.js";
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_MESSAGES, HTTP_STATUS_OK } from "../utils/httpConstants.js";
 import { FieldPacket, RowDataPacket } from "mysql2";
 
 const pool = await initializeDB();
@@ -47,10 +47,10 @@ export const sendPasswordResetLink = async (
       (error: string, info: { response }) => {
         if (error) {
           console.log("my error is" + error);
-          res.send(httpConstants[500].sendingResetEmail);
+          res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
         } else {
           console.log(`Email sent: ${info.response}`);
-          res.send(httpConstants[200].resetEmailSent);
+          res.status(HTTP_STATUS_OK).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_OK]);
         }
       }
     );
@@ -70,7 +70,7 @@ export const updatePassword = async (
       await connection.query(getDetsfromOTP, [otpToken]);
 
     if (rows.length <= 0) {
-      res.send(httpConstants[400].otpError);
+      res.status(HTTP_STATUS_BAD_REQUEST).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     }
     
     // update password

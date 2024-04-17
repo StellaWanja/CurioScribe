@@ -3,7 +3,7 @@ import initializeDB from "../../application/repositories/database.js";
 import { User } from "../models/userModel.js";
 import { comparePassword } from "../utils/hashPassword.js";
 import { addUser, getUserDetails, getUserDetailsWithId } from "./schema/user_schema_v1.js";
-import { httpConstants } from "../utils/httpConstants.js";
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_MESSAGES } from "../utils/httpConstants.js";
 import { ParsedQs } from "qs";
 
 const pool = await initializeDB();
@@ -19,7 +19,7 @@ export const getUserDetailsFromDB = async (userData: User, res: Response) => {
     // check if passwords match and if they don't return error
     const passwordsMatch = await comparePassword(password, data[0]["password"]);
     if (!passwordsMatch) {
-     return res.send(httpConstants[400].loginError);
+     return res.status(HTTP_STATUS_BAD_REQUEST).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     }
 
     connection.release();
@@ -38,7 +38,7 @@ export const getUserDetailsUsingId = async (userId: string | ParsedQs | string[]
     const rows = data[0];
 
     if(rows === null || rows === undefined){
-      return res.send(httpConstants[400].userUnidentified)
+      return res.status(HTTP_STATUS_BAD_REQUEST).send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST])
     }    
     
     connection.release();
