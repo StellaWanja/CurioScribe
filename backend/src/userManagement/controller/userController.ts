@@ -1,7 +1,10 @@
 import { Router } from "express";
-import { signup, login, forgotPassword, resetPassword } from "../services/authService.js";
-import { userProfile } from "../services/profileService.js";
-import { verifyToken } from "../utils/verifyToken.js";
+import { signup } from "../services/authServices/signup.js";
+import { login } from "../services/authServices/login.js";
+import { forgotPassword } from "../services/authServices/forgotPassword.js";
+import { resetPassword } from "../services/authServices/resetPassword.js";
+import { userProfile } from "../services/profileServices/getUserProfile.js";
+import { verifyToken } from "../utils/tokens/verifyToken.js";
 
 const routes = Router();
 

@@ -3,7 +3,7 @@ import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_MESSAGES,
   HTTP_STATUS_UNAUTHORIZED_ACCESS,
-} from "./httpConstants.js";
+} from "../httpConstants.js";
 
 // Middleware to verify the Bearer token and get the user's ID
 export const verifyToken = async (req, res, next) => {
