@@ -11,7 +11,7 @@ export const createUsersTable = `
         updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         otp VARCHAR(255),
         otpExpire VARCHAR(255)
-    );
+    ) AUTO_INCREMENT = 10001;
 `;
 
 // create new user

@@ -1,15 +1,14 @@
 import mysql from "mysql2";
-
-//use env
 import dotenv from "dotenv";
 import { createDB, useDB } from "./schema/database_schema_v1.js";
+
 dotenv.config();
 
 const pool = mysql
   .createPool({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD
+    password: process.env.MYSQL_PASSWORD,
   })
   .promise();
 
