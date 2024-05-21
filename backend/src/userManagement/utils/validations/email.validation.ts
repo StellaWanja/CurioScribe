@@ -1,25 +1,23 @@
 import { User } from "../../models/userModel.js";
 import {
   HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_MESSAGES,
 } from "../httpConstants.js";
-import { emailIsInvalid, hasEmailNullValues } from "./validationFunctions.js";
+import { emailIsInvalid, hasEmailNullValues } from "./functions.validations.js";
 
 export const validateEmail = async (
   userEmail: User
 ): Promise<{
   success: boolean;
-  error?: { status: number; message: string };
+  message?: string;
 }> => {
   try {
     // null values
     if (hasEmailNullValues(userEmail)) {
       return {
         success: false,
-        error: {
-          status: HTTP_STATUS_BAD_REQUEST,
-          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
-        },
+        message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
       };
     }
 
@@ -27,14 +25,14 @@ export const validateEmail = async (
     if (emailIsInvalid(userEmail)) {
       return {
         success: false,
-        error: {
-          status: HTTP_STATUS_BAD_REQUEST,
-          message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
-        },
+        message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
       };
     }
     return { success: true };
   } catch (error) {
-    throw new Error(error);
+    return {
+      success: false,
+      message: HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR],
+    };
   }
 };
