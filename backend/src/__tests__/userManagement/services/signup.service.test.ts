@@ -1,50 +1,32 @@
 import request from "supertest";
 import mysql from "mysql2/promise";
-import dotenv from "dotenv";
-import { jest } from '@jest/globals'
-//import app from "../../../application/app.js";
-import makeApp from "../../../application/app.js";
-import { checkEmailExists } from "../../repositories/checkUserExistence.js";
+import { pool } from "../../../application/repositories/database.js";
+import app from "../../../application/app.js";
 
-dotenv.config();
+// mock db connection
+jest.mock("../../../application/repositories/database.ts", () => ({
+  pool: {
+    getConnection: jest.fn(),
+  },
+}));
 
-const createUser = jest.fn()
-const app = makeApp({createUser})
+const SIGNUP_API_ROUTE = "/auth/signup";
 
-
-const SIGNUP_API_ROUTE = "/user/signup";
-// const dbConfig = {
-//   host: process.env.MYSQL_HOST,
-//   user: process.env.MYSQL_USER,
-//   password: process.env.MYSQL_PASSWORD,
-//   database: "curioscribeTest",
-// };
-// let connection: mysql.Connection;
-
-// beforeAll(async () => {
-//   try {
-//     connection = await mysql.createConnection(dbConfig);
-//     console.log("Connected to MySQL database");
-//   } catch (error) {
-//     console.error("Error connecting to MySQL database:", error);
-//     throw error; // Terminate test suite if connection fails
-//   }
-// });
-
-// afterEach(async () => {
-//   try {
-//     // Clean up the database
-//     await connection.execute("DELETE FROM usersTest");
-//     console.log("Disconnected from MySQL database");
-//   } catch (error) {
-//     console.error(
-//       "Error cleaning up or disconnecting from MySQL database:",
-//       error
-//     );
-//   }
-// });
 
 describe("Testing signup route", () => {
+  let mockConnection: { query: any };
+
+  beforeEach(() => {
+    mockConnection = {
+      query: jest.fn(),
+    };
+    (pool.getConnection as jest.Mock).mockResolvedValue(mockConnection);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("given no data is provided", () => {
     it("should return status as 400 and message as Bad Request", async () => {
       const mockData = {
@@ -173,10 +155,9 @@ describe("Testing signup route", () => {
     });
   });
 
-  describe("given the user exists in the database", () => {
-    it("should check if user exists and return status as 400 and message as Bad Request", async () => {
-      const mockData = { email: "jd@test.com" };
-      const duplicateEmailChecker = `SELECT COUNT(*) AS count FROM usersTest WHERE email = ?`;
+  describe("given the user email does not exist in the database", () => {
+    it("should return status as 400 and message as Bad Request", async () => {
+      const mockData = { email: "test@test.com" };
     });
   });
 });

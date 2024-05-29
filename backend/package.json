@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "curioscribe-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "This project revolves around creating a dynamic content generation tool leveraging the OpenAI API to craft engaging articles and tales. This innovative platform empowers users to input prompts or themes and generate high-quality, original content \r tailored to their specifications. Additionally, the tool incorporates features for managing and organizing generated content, allowing users to review, edit, and customize articles before publication. With seamless integration into community platforms, \r users can easily share and publish their creations, fostering collaboration and creativity within the community. This project aims to revolutionize content creation, providing an efficient and collaborative platform for generating and sharing captivating \r narratives. The project is currently being deveoped using React, Express. Node, TypeScript and MySQL.",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "start": "node ./dist/application/server.js NODE_ENV=development",
     "preserve": "npm run build",
     "serve": "concurrently \"npx tsc -w\" \"nodemon ./dist/application/server.js\" ",
-    "test": "jest --config jest.config.ts --watch-all --detectOpenHandles"
+    "test": "jest --config jest.config.ts --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
@@ -18,27 +18,27 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.4",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.12.12",
     "@types/supertest": "^6.0.2",
-    "bcrypt": "^5.1.1",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
-    "eslint-plugin-jest": "^28.3.0",
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.0",
+    "eslint-plugin-jest": "^28.5.0",
+    "nodemon": "^3.1.2",
     "supertest": "^7.0.0",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@types/jsonwebtoken": "^9.0.6",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.9.3",
+    "mysql2": "^3.9.8",
     "nodemailer": "^6.9.13",
-    "rimraf": "^5.0.5",
-    "tsx": "^4.7.3"
+    "rimraf": "^5.0.7",
+    "tsx": "^4.11.0"
   }
 }

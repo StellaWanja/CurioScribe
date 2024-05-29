@@ -3,7 +3,7 @@ import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_MESSAGES,
-} from "../httpConstants.js";
+} from "../httpResponses.js";
 import {
   emailIsInvalid,
   hasNullValues,

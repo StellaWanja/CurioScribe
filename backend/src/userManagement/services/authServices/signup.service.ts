@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
+import { User } from "../../models/userModel.js";
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_MESSAGES,
-} from "../../utils/httpConstants.js";
-import { User } from "../../models/userModel.js";
+} from "../../utils/httpResponses.js";
 import { validateSignup } from "../../utils/validations/signup.validation.js";
-import { checkEmailExists, checkUsernameExists } from "../../repositories/checkUserExistence.js";
+import { checkEmailExists } from "../../repositories/dbFunctions/verifyEmail.dbfunctions.js";
+import { checkUsernameExists } from "../../repositories/dbFunctions/verifyUsername.dbfunctions.js";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -23,12 +24,12 @@ export const signup = async (req: Request, res: Response) => {
     const emailExists = await checkEmailExists(userData);
     const usernameExists = await checkUsernameExists(userData);
     if (!emailExists || !usernameExists) {
-        return res
-          .status(HTTP_STATUS_BAD_REQUEST)
-          .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
+      return res
+        .status(HTTP_STATUS_BAD_REQUEST)
+        .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     }
     console.log(emailExists);
-
+    
   } catch (error) {
     console.error("Error signing up:", error);
     return res

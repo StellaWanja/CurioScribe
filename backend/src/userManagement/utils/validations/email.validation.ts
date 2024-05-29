@@ -1,9 +1,5 @@
 import { User } from "../../models/userModel.js";
-import {
-  HTTP_STATUS_BAD_REQUEST,
-  HTTP_STATUS_INTERNAL_SERVER_ERROR,
-  HTTP_STATUS_MESSAGES,
-} from "../httpConstants.js";
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_MESSAGES } from "../httpResponses.js";
 import { emailIsInvalid, hasEmailNullValues } from "./functions.validations.js";
 
 export const validateEmail = async (

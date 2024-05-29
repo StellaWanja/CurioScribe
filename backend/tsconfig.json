@@ -9,6 +9,6 @@
         "esModuleInterop": true,
         "noImplicitAny": true,        
     },
-    "include": ["src/**/*.ts", "__tests__/**/*.ts"],
+    "include": ["src/**/*.ts", "src/__tests__/**/*.ts"],
     "exclude": ["node_modules"]
 }
