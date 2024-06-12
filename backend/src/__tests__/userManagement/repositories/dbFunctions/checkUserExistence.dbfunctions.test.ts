@@ -1,15 +1,21 @@
-import { pool } from "../../../application/repositories/database.js";
-import { checkEmailExists } from "../../../userManagement/repositories/dbFunctions/verifyEmail.dbfunctions.js";
-import { duplicateEmailChecker } from "../../../userManagement/repositories/schema/user_schema_v1.0.0.js";
+import { pool } from "../../../../application/repositories/database.js";
+import {
+  checkEmailExists,
+  checkUsernameExists,
+} from "../../../../userManagement/repositories/dbFunctions/checkUserExistence.dbfunctions.js";
+import {
+  duplicateEmailChecker,
+  duplicateUsernameChecker,
+} from "../../../../userManagement/repositories/schema/user_schema_v1.0.0.js";
 
 // mock db connection
-jest.mock("../../../application/repositories/database.ts", () => ({
+jest.mock("../../../../application/repositories/database.ts", () => ({
   pool: {
     getConnection: jest.fn(),
   },
 }));
 
-describe("Testing email verification", () => {
+describe("Testing whether a user exists in database", () => {
   let mockConnection: { query: any }; // mock object that simulates the behavior of a real database connection
 
   beforeEach(() => {
@@ -37,13 +43,33 @@ describe("Testing email verification", () => {
 
       // Call the function with the mock data
       const result = await checkEmailExists(mockUserData);
-      
+
       // Assert that the result is true
       expect(result).toBe(false);
       expect(mockConnection.query).toHaveBeenCalledTimes(1);
       expect(mockConnection.query).toHaveBeenCalledWith(duplicateEmailChecker, [
-        "test@example.com",
+        mockUserData.email,
       ]);
+    });
+  });
+
+  describe("given the username provided does not exist in the database", () => {
+    test("should return false", async () => {
+      const mockUserData = { username: "example" }; // Mock user data
+      const mockQueryResult = [[{ count: 0 }]]; // Mock the query result
+
+      mockConnection.query.mockResolvedValue(mockQueryResult);
+
+      // Call the function with the mock data
+      const result = await checkUsernameExists(mockUserData);
+
+      // Assert that the result is true
+      expect(result).toBe(false);
+      expect(mockConnection.query).toHaveBeenCalledTimes(1);
+      expect(mockConnection.query).toHaveBeenCalledWith(
+        duplicateUsernameChecker,
+        [mockUserData.username]
+      );
     });
   });
 });

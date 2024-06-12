@@ -1,39 +1,61 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { User } from "../../models/userModel.js";
 import {
-  HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_MESSAGES,
+  HTTP_STATUS_RESOURCE_EXISTS,
 } from "../../utils/httpResponses.js";
 import { validateSignup } from "../../utils/validations/signup.validation.js";
-import { checkEmailExists } from "../../repositories/dbFunctions/verifyEmail.dbfunctions.js";
-import { checkUsernameExists } from "../../repositories/dbFunctions/verifyUsername.dbfunctions.js";
+import {
+  checkEmailExists,
+  checkUsernameExists,
+} from "../../repositories/dbFunctions/checkUserExistence.dbfunctions.js";
+import { hashPassword } from "../../utils/hashPassword.js";
+import { addUserToDB } from "../../repositories/dbFunctions/addUser.dbfunctions.js";
 
-export const signup = async (req: Request, res: Response) => {
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userData: User = req.body;
 
     // validate data
     const validation = await validateSignup(userData);
     if (!validation.success) {
-      res.status(HTTP_STATUS_BAD_REQUEST).send(validation.message);
-      return;
+      return res.status(HTTP_STATUS_BAD_REQUEST).send(validation.message);
     }
 
     // duplicate check
     const emailExists = await checkEmailExists(userData);
     const usernameExists = await checkUsernameExists(userData);
-    if (!emailExists || !usernameExists) {
+    if (emailExists || usernameExists) {
       return res
-        .status(HTTP_STATUS_BAD_REQUEST)
-        .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
+        .status(HTTP_STATUS_RESOURCE_EXISTS)
+        .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_RESOURCE_EXISTS]);
     }
-    console.log(emailExists);
-    
+
+    // hash password
+    const passwordHashed = await hashPassword(userData);
+    if (
+      passwordHashed &&
+      typeof passwordHashed === "object" &&
+      "status" in passwordHashed
+    ) {
+      return res
+        .status(HTTP_STATUS_INTERNAL_SERVER_ERROR)
+        .send(passwordHashed.message);
+    }
+
+    // send data to db
+    await addUserToDB(userData, passwordHashed);
+
+    // get user details
+    const userInfo = await getUserDetailsFromDB(userData, res);
   } catch (error) {
     console.error("Error signing up:", error);
-    return res
-      .status(HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
+    next(error);
   }
 };

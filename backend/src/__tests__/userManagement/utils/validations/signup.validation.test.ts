@@ -1,32 +1,9 @@
 import request from "supertest";
-import mysql from "mysql2/promise";
-import { pool } from "../../../application/repositories/database.js";
-import app from "../../../application/app.js";
-
-// mock db connection
-jest.mock("../../../application/repositories/database.ts", () => ({
-  pool: {
-    getConnection: jest.fn(),
-  },
-}));
+import app from "../../../../application/app.js";
 
 const SIGNUP_API_ROUTE = "/auth/signup";
 
-
 describe("Testing signup route", () => {
-  let mockConnection: { query: any };
-
-  beforeEach(() => {
-    mockConnection = {
-      query: jest.fn(),
-    };
-    (pool.getConnection as jest.Mock).mockResolvedValue(mockConnection);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe("given no data is provided", () => {
     it("should return status as 400 and message as Bad Request", async () => {
       const mockData = {
@@ -38,8 +15,8 @@ describe("Testing signup route", () => {
         confirmPassword: "",
       };
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.statusCode).toEqual(400);
-      expect(res.text).toEqual("Bad Request");
+      expect(res.statusCode).toBe(400);
+      expect(res.text).toBe("Bad Request");
     });
   });
 
@@ -150,14 +127,8 @@ describe("Testing signup route", () => {
         confirmPassword: "Abcd!123",
       };
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.statusCode).toEqual(400);
-      expect(res.text).toEqual("Bad Request");
-    });
-  });
-
-  describe("given the user email does not exist in the database", () => {
-    it("should return status as 400 and message as Bad Request", async () => {
-      const mockData = { email: "test@test.com" };
+      expect(res.statusCode).toBe(400);
+      expect(res.text).toBe("Bad Request");
     });
   });
 });
