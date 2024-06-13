@@ -15,5 +15,5 @@ export const HTTP_STATUS_MESSAGES: { [key: number]: string } = {
   [HTTP_STATUS_UNAUTHORIZED_ACCESS]: "Unauthorized access",
   [HTTP_STATUS_NOT_FOUND]: "Not Found",
   [HTTP_STATUS_RESOURCE_EXISTS]: "Resource exists",
-  [HTTP_STATUS_INTERNAL_SERVER_ERROR]: "An error occurred!!!",
+  [HTTP_STATUS_INTERNAL_SERVER_ERROR]: "Internal Server Error",
 };
