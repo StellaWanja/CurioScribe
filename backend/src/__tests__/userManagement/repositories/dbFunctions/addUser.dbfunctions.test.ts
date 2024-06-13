@@ -13,7 +13,6 @@ jest.mock("../../../../application/repositories/database.ts", () => ({
 }));
 
 const mockData = {
-  id: "10001",
   firstName: "John",
   lastName: "Doe",
   username: "JD",
@@ -41,9 +40,11 @@ describe("Testing whether a user is added successfully to a database", () => {
       };
       (pool.getConnection as jest.Mock).mockResolvedValue(mockConnection);
       const passwordHashed = "da86cba3d7808e14be711b50b532d8a3f1f1d128";
-      await addUserToDB(mockData, passwordHashed);
+      const userId = "ba9613c1-2e45-4a0b-a549-26fbb2361a2c";
+      await addUserToDB(userId, mockData, passwordHashed);
       expect(mockConnection.query).toHaveBeenCalledWith(createUsersTable);
       expect(mockConnection.execute).toHaveBeenCalledWith(addUser, [
+        userId,
         mockData.firstName,
         mockData.lastName,
         mockData.username,
@@ -59,7 +60,8 @@ describe("Testing whether a user is added successfully to a database", () => {
       };
       (pool.getConnection as jest.Mock).mockResolvedValue(mockConnection);
       const passwordHashed = "da86cba3d7808e14be711b50b532d8a3f1f1d128";
-      const result = await addUserToDB(mockData, passwordHashed);
+      const userId = "ba9613c1-2e45-4a0b-a549-26fbb2361a2c";
+      const result = await addUserToDB(userId, mockData, passwordHashed);
       expect(result).toEqual({
         status: 500,
         message: "Internal Server Error",

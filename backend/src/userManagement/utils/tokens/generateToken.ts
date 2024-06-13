@@ -9,14 +9,9 @@ import {
 dotenv.config();
 const jwtSecret = process.env.JWT_SECRET as string;
 
-export const generateToken = async (
-  userInfo: User[] | { status: number; message: string }
-) => {
+export const generateToken = async (userId: string, email: string) => {
   try {
-    const user = userInfo as User[];
-    const { id, email } = user[0];
-
-    const token = jwt.sign({ userId: id, email: email }, jwtSecret, {
+    const token = jwt.sign({ userId: userId, email: email }, jwtSecret, {
       expiresIn: "1h",
     });
 

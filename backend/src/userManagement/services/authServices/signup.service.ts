@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
+import * as uuid from "uuid";
 import { User } from "../../models/userModel.js";
 import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_MESSAGES,
   HTTP_STATUS_RESOURCE_EXISTS,
-  HTTP_STATUS_OK,
+  HTTP_STATUS_CREATED,
 } from "../../utils/httpResponses.js";
 import { validateSignup } from "../../utils/validations/signup.validation.js";
 import {
@@ -14,7 +15,6 @@ import {
 } from "../../repositories/dbFunctions/checkUserExistence.dbfunctions.js";
 import { hashPassword } from "../../utils/hashPassword.js";
 import { addUserToDB } from "../../repositories/dbFunctions/addUser.dbfunctions.js";
-import { getUserDetailsFromDB } from "../../repositories/dbFunctions/getUser.dbfunctions.js";
 import { generateToken } from "../../utils/tokens/generateToken.js";
 
 export const signup = async (req: Request, res: Response) => {
@@ -47,22 +47,17 @@ export const signup = async (req: Request, res: Response) => {
     }
 
     // send data to db
-    await addUserToDB(userData, passwordHashed);
-
-    // get user details
-    const userInfo = await getUserDetailsFromDB(userData);
-    if (userInfo && typeof userInfo === "object" && "status" in userInfo) {
-      return res.status(userInfo.status).send(userInfo.message);
-    }
+    const userId: string = uuid.v4();
+    await addUserToDB(userId, userData, passwordHashed);
 
     // create jwt
-    const token = await generateToken(userInfo);
+    const token = await generateToken(userId, userData.email);
 
     // login and set token in header
     res.setHeader("Authorization", `Bearer ${token}`);
     return res
-      .status(HTTP_STATUS_OK)
-      .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_OK]);
+      .status(HTTP_STATUS_CREATED)
+      .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_CREATED]);
   } catch (error) {
     console.error("Error signing up:", error);
     return res
