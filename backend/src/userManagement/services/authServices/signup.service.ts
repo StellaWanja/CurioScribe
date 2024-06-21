@@ -17,7 +17,7 @@ import { hashPassword } from "../../utils/hashPassword.js";
 import { addUserToDB } from "../../repositories/dbFunctions/addUser.dbfunctions.js";
 import { generateToken } from "../../utils/tokens/generateToken.js";
 
-export const signup = async (req: Request, res: Response) => {
+export const Signup = async (req: Request, res: Response) => {
   try {
     const userData: User = req.body;
 

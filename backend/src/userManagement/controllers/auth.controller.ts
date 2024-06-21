@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { signup } from "../services/authServices/signup.service.js";
+import { Signup } from "../services/authServices/signup.service.js";
+import { Login } from "../services/authServices/login.service.js";
 
 const routes = Router();
 
-routes.post('/signup', signup);
+routes.post('/signup', Signup);
+routes.post('/login', Login);
 
 export default routes;
