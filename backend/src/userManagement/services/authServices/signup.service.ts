@@ -17,7 +17,7 @@ import { hashPassword } from "../../utils/hashPassword.js";
 import { addUserToDB } from "../../repositories/dbFunctions/addUser.dbfunctions.js";
 import { generateToken } from "../../utils/tokens/generateToken.js";
 
-export const Signup = async (req: Request, res: Response) => {
+const Signup = async (req: Request, res: Response) => {
   try {
     const userData: User = req.body;
 
@@ -53,7 +53,7 @@ export const Signup = async (req: Request, res: Response) => {
     // create jwt
     const token = await generateToken(userId, userData.email);
 
-    // login and set token in header
+    // signup and set token in header
     res.setHeader("Authorization", `Bearer ${token}`);
     return res
       .status(HTTP_STATUS_CREATED)
@@ -65,3 +65,5 @@ export const Signup = async (req: Request, res: Response) => {
       .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
   }
 };
+
+export default Signup;
