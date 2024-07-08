@@ -26,10 +26,10 @@ const SIGNUP_API_ROUTE = "/auth/signup";
 const mockData = {
   firstName: "John",
   lastName: "Doe",
-  username: "JD",
+  username: "test",
   email: "test@example.com",
-  password: "Abcd!1234",
-  confirmPassword: "Abcd!1234",
+  password: "testPassword@123",
+  confirmPassword: "testPassword@123",
 };
 const jwtSecret = process.env.JWT_SECRET as string;
 

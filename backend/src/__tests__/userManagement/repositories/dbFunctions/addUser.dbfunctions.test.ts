@@ -15,18 +15,22 @@ jest.mock("../../../../application/repositories/database.ts", () => ({
 const mockData = {
   firstName: "John",
   lastName: "Doe",
-  username: "JD",
+  username: "test",
   email: "test@example.com",
-  password: "Abcd!1234",
-  confirmPassword: "Abcd!1234",
+  password: "testPassword@123",
+  confirmPassword: "testPassword@123",
 };
 
 describe("Testing whether a user is added successfully to a database", () => {
-  let mockConnection: {
-    query: any;
-    execute?: jest.Mock<any, any, any>;
-    release?: jest.Mock<any, any, any>;
-  };
+  let mockConnection: any;
+
+  beforeEach(() => {
+    mockConnection = {
+      execute: jest.fn(),
+      release: jest.fn(),
+    };
+    (pool.getConnection as jest.Mock).mockResolvedValue(mockConnection);
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -37,6 +41,7 @@ describe("Testing whether a user is added successfully to a database", () => {
       mockConnection = {
         query: jest.fn().mockResolvedValueOnce([{}]), // Mock table check
         execute: jest.fn().mockResolvedValueOnce([{}]), // Mock user insertion
+        release: jest.fn(),
       };
       (pool.getConnection as jest.Mock).mockResolvedValue(mockConnection);
       const passwordHashed = "da86cba3d7808e14be711b50b532d8a3f1f1d128";
@@ -51,12 +56,14 @@ describe("Testing whether a user is added successfully to a database", () => {
         mockData.email,
         passwordHashed,
       ]);
+      expect(mockConnection.release).toHaveBeenCalledTimes(1);
     });
 
     it("should return an error if database operation fails", async () => {
       mockConnection = {
         query: jest.fn().mockRejectedValueOnce(new Error("DB Error")),
         execute: jest.fn(),
+        release: jest.fn(),
       };
       (pool.getConnection as jest.Mock).mockResolvedValue(mockConnection);
       const passwordHashed = "da86cba3d7808e14be711b50b532d8a3f1f1d128";
@@ -68,6 +75,7 @@ describe("Testing whether a user is added successfully to a database", () => {
       });
       expect(mockConnection.query).toHaveBeenCalledWith(createUsersTable);
       expect(mockConnection.execute).not.toHaveBeenCalledWith();
+      expect(mockConnection.release).not.toHaveBeenCalled();
     });
   });
 });

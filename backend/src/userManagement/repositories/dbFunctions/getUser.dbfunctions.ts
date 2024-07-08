@@ -18,14 +18,19 @@ export const getUser = async (userData: {
     const connection = await pool.getConnection();
     const results: any = await connection.query(getUserDetails, [email]);
     const row = results[0];
+
+    if (!row || row.length === 0) {
+      connection.release();
+      return;
+    }
+
     const retrievedPassword: string = row[0]["password"];
 
     // check if passwords match and if they don't return error
     const passwordsMatch = await comparePassword(password, retrievedPassword);
     if (!passwordsMatch) return;
 
-    connection.release();
-
+    connection.release();    
     return results;
   } catch (error) {
     return {

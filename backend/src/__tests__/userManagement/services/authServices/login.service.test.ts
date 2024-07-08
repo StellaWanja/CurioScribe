@@ -17,10 +17,20 @@ const LOGIN_API_ROUTE = "/auth/login";
 
 const mockData = {
   email: "test@example.com",
-  password: "Abcd!1234",
+  password: "testPassword@123",
 };
 
-describe("Testing signup route", () => {
+describe("Testing login route", () => {
+  describe("given the user email does not exist in the database", () => {
+    it("should return 400 and message as Bad Request", async () => {
+      (checkEmailExists as jest.Mock).mockResolvedValueOnce(false);
+      const res = await request(app).post(LOGIN_API_ROUTE).send(mockData);
+      expect(res.status).toBe(400);
+      expect(res.text).toBe("Bad Request");
+      expect(checkEmailExists).toHaveBeenCalledWith(mockData);
+    });
+  });
+
   describe("given the user email does not exist in the database", () => {
     it("should return 400 and message as Bad Request", async () => {
       (checkEmailExists as jest.Mock).mockResolvedValueOnce(false);

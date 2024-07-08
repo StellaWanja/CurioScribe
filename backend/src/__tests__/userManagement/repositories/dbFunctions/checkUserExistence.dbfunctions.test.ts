@@ -14,8 +14,15 @@ jest.mock("../../../../application/repositories/database.ts", () => ({
   },
 }));
 
+// Mock user data
+const mockUserEmail = { email: "test@example.com" };
+const mockUsername = { username: "test" };
+// Mock query results
+const mockFalseQueryResult = [[{ count: 0 }]];
+const mockTrueQueryResult = [[{ count: 1 }]];
+
 describe("Testing whether a user exists in database", () => {
-  let mockConnection: { query: any }; 
+  let mockConnection: { query: any };
 
   beforeEach(() => {
     mockConnection = {
@@ -30,78 +37,65 @@ describe("Testing whether a user exists in database", () => {
 
   describe("given the email provided does not exist in the database", () => {
     it("should return false", async () => {
-      const mockUserData = { email: "test@example.com" }; 
-      const mockQueryResult = [[{ count: 0 }]]; // Mock the query result
-
-      mockConnection.query.mockResolvedValue(mockQueryResult);
+      mockConnection.query.mockResolvedValue(mockFalseQueryResult);
 
       // Call the function with the mock data
-      const result = await checkEmailExists(mockUserData);
+      const result = await checkEmailExists(mockUserEmail);
 
       // Assert that the result is true
       expect(result).toBe(false);
       expect(mockConnection.query).toHaveBeenCalledTimes(1);
       expect(mockConnection.query).toHaveBeenCalledWith(duplicateEmailChecker, [
-        mockUserData.email,
+        mockUserEmail.email,
       ]);
     });
   });
 
-
   describe("given the email provided exists in the database", () => {
     it("should return true", async () => {
-      const mockUserData = { email: "test@example.com" }; // Mock user data
-      const mockQueryResult = [[{ count: 1 }]]; // Mock the query result
+      mockConnection.query.mockResolvedValue(mockTrueQueryResult);
 
-      mockConnection.query.mockResolvedValue(mockQueryResult);
-
-      const result = await checkEmailExists(mockUserData);
+      const result = await checkEmailExists(mockUserEmail);
 
       // Assert that the result is true
       expect(result).toBe(true);
       expect(mockConnection.query).toHaveBeenCalledTimes(1);
       expect(mockConnection.query).toHaveBeenCalledWith(duplicateEmailChecker, [
-        mockUserData.email,
+        mockUserEmail.email,
       ]);
     });
   });
 
   describe("given the username provided does not exist in the database", () => {
     it("should return false", async () => {
-      const mockUserData = { username: "example" }; // Mock user data
-      const mockQueryResult = [[{ count: 0 }]]; // Mock the query result
-
-      mockConnection.query.mockResolvedValue(mockQueryResult);
+      mockConnection.query.mockResolvedValue(mockFalseQueryResult);
 
       // Call the function with the mock data
-      const result = await checkUsernameExists(mockUserData);
+      const result = await checkUsernameExists(mockUsername);
 
       // Assert that the result is true
       expect(result).toBe(false);
       expect(mockConnection.query).toHaveBeenCalledTimes(1);
       expect(mockConnection.query).toHaveBeenCalledWith(
         duplicateUsernameChecker,
-        [mockUserData.username]
+        [mockUsername.username]
       );
     });
   });
 
   describe("given the username provided exists in the database", () => {
-    it("should return false", async () => {
-      const mockUserData = { username: "example" }; // Mock user data
-      const mockQueryResult = [[{ count: 1 }]]; // Mock the query result
-
-      mockConnection.query.mockResolvedValue(mockQueryResult);
+    it("should return true", async () => {
+      mockConnection.query.mockResolvedValue(mockTrueQueryResult);
 
       // Call the function with the mock data
-      const result = await checkUsernameExists(mockUserData);
+      const result = await checkUsernameExists(mockUsername);
 
       // Assert that the result is true
       expect(result).toBe(true);
       expect(mockConnection.query).toHaveBeenCalledTimes(1);
       expect(mockConnection.query).toHaveBeenCalledWith(
         duplicateUsernameChecker,
-        [mockUserData.username]
+        [mockUsername.username]
       );
     });
   });
