@@ -1,7 +1,6 @@
 import { pool } from "../../../application/repositories/database.js";
 import { comparePassword } from "../../utils/hashPassword.js";
 import {
-  HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_MESSAGES,
 } from "../../utils/httpResponses.js";

@@ -50,7 +50,7 @@ const Login = async (req: Request, res: Response) => {
       .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_OK]);
     
   } catch (error) {
-    console.error("Error signing up:", error);
+    console.error("Error logging in:", error);
     return res
       .status(HTTP_STATUS_INTERNAL_SERVER_ERROR)
       .send(HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]);
