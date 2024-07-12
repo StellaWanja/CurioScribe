@@ -11,7 +11,7 @@ import {
   passwordMatch,
 } from "./functions.validations.js";
 
-export const validateSignup = async (
+export const validateSignupInputs = async (
   userData: User
 ): Promise<{
   success: boolean;

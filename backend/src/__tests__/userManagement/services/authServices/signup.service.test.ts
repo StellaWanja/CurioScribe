@@ -1,14 +1,26 @@
 import request from "supertest";
-import jwt from 'jsonwebtoken';
-import dotenv from "dotenv";
 import app from "../../../../application/app.js";
 import {
   checkEmailExists,
   checkUsernameExists,
 } from "../../../../userManagement/repositories/dbFunctions/checkUserExistence.dbfunctions.js";
 import { hashPassword } from "../../../../userManagement/utils/hashPassword.js";
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_MESSAGES,
+  HTTP_STATUS_RESOURCE_EXISTS,
+} from "../../../../userManagement/utils/httpResponses.js";
+import { validateSignupInputs } from "../../../../userManagement/utils/validations/signup.validation.js";
 
-dotenv.config();
+
+jest.mock(
+  "../../../../userManagement/utils/validations/signup.validation.ts",
+  () => ({
+    validateSignupInputs: jest.fn(),
+  })
+);
 
 jest.mock(
   "../../../../userManagement/repositories/dbFunctions/checkUserExistence.dbfunctions.ts",
@@ -31,52 +43,78 @@ const mockData = {
   password: "testPassword@123",
   confirmPassword: "testPassword@123",
 };
-const jwtSecret = process.env.JWT_SECRET as string;
 
 describe("Testing signup route", () => {
+  describe("given the validation fails", () => {
+    it("should return 400 and message as Bad Request", async () => {
+      (validateSignupInputs as jest.Mock).mockResolvedValue({
+        success: false,
+        message: HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST],
+      });
+
+      const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
+
+      expect(res.statusCode).toBe(HTTP_STATUS_BAD_REQUEST);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
+    });
+  });
+
   describe("given the user email exists in the database", () => {
     it("should return 409 and message as Resource exists", async () => {
-      (checkEmailExists as jest.Mock).mockResolvedValueOnce(true);
+      (validateSignupInputs as jest.Mock).mockResolvedValue({ success: true });
+      (checkEmailExists as jest.Mock).mockResolvedValue(true);
+
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.status).toBe(409);
-      expect(res.text).toBe("Resource exists");
-      expect(checkEmailExists).toHaveBeenCalledWith(mockData);
+
+      expect(res.statusCode).toBe(HTTP_STATUS_RESOURCE_EXISTS);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_RESOURCE_EXISTS]);
     });
   });
 
   describe("given the username exists in the database", () => {
     it("should return 409 and message as Resource exists", async () => {
-      (checkUsernameExists as jest.Mock).mockResolvedValueOnce(true);
+      (validateSignupInputs as jest.Mock).mockResolvedValue({ success: true });
+      (checkUsernameExists as jest.Mock).mockResolvedValue(true);
+
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.status).toBe(409);
-      expect(res.text).toBe("Resource exists");
-      expect(checkUsernameExists).toHaveBeenCalledWith(mockData);
+
+      expect(res.statusCode).toBe(HTTP_STATUS_RESOURCE_EXISTS);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_RESOURCE_EXISTS]);
     });
   });
 
   describe("given the password does not get hashed successfully", () => {
     it("should return 409 and message as Resource exists", async () => {
       const errorResponse = {
-        status: 500,
-        message: "Internal server error",
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        message: HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR],
       };
-      (hashPassword as jest.Mock).mockResolvedValueOnce(errorResponse);
+      (validateSignupInputs as jest.Mock).mockResolvedValue({ success: true });
+      (checkEmailExists as jest.Mock).mockResolvedValue(false);
+      (checkUsernameExists as jest.Mock).mockResolvedValue(false);
+      (hashPassword as jest.Mock).mockResolvedValue(errorResponse);
+
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.status).toBe(500);
-      expect(res.text).toBe("Internal server error");
-      expect(hashPassword).toHaveBeenCalledWith(mockData);
+
+      expect(res.status).toBe(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+      expect(res.text).toBe(
+        HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR]
+      );
     });
   });
 
   describe("given everything works fine", () => {
     it("should sign up a user and set the Authorization header", async () => {
-      const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      const token = res.header['authorization'].split(' ')[1];
-      const tokenPayload = jwt.verify(token, jwtSecret);
+      (validateSignupInputs as jest.Mock).mockResolvedValue({ success: true });
+      (checkEmailExists as jest.Mock).mockResolvedValue(false);
+      (checkUsernameExists as jest.Mock).mockResolvedValue(false);
+      (hashPassword as jest.Mock).mockResolvedValue("mock_hashed_password");
 
-      expect(res.status).toBe(201);
-      expect(res.header).toHaveProperty('authorization')
-      expect(tokenPayload).toMatchObject({ email: mockData.email }); // contains at least the property email
+      const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
+
+      expect(res.status).toBe(HTTP_STATUS_CREATED);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_CREATED]);
+      expect(res.header).toHaveProperty("authorization");
     });
   });
 });

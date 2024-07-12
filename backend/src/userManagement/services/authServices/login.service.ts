@@ -41,9 +41,9 @@ const Login = async (req: Request, res: Response) => {
     // create jwt
     const userId: string = userInfo[0][0]["id"];
     const userEmail: string = userInfo[0][0]["email"];
-    const token = await generateToken(userId, userEmail);
+    const token = await generateToken(userId, userEmail);   
 
-    // signup and set token in header
+    // login and set token in header
     res.setHeader("Authorization", `Bearer ${token}`);
     return res
       .status(HTTP_STATUS_OK)

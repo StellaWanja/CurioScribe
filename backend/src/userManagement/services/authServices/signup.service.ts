@@ -8,7 +8,7 @@ import {
   HTTP_STATUS_RESOURCE_EXISTS,
   HTTP_STATUS_CREATED,
 } from "../../utils/httpResponses.js";
-import { validateSignup } from "../../utils/validations/signup.validation.js";
+import { validateSignupInputs } from "../../utils/validations/signup.validation.js";
 import {
   checkEmailExists,
   checkUsernameExists,
@@ -22,7 +22,7 @@ const Signup = async (req: Request, res: Response) => {
     const userData: User = req.body;
 
     // validate data
-    const validation = await validateSignup(userData);
+    const validation = await validateSignupInputs(userData);
     if (!validation.success) {
       return res.status(HTTP_STATUS_BAD_REQUEST).send(validation.message);
     }

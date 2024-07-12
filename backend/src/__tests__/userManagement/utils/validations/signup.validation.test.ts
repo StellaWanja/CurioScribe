@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../../../application/app.js";
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_MESSAGES } from "../../../../userManagement/utils/httpResponses.js";
 
 const SIGNUP_API_ROUTE = "/auth/signup";
 
@@ -15,8 +16,8 @@ describe("Testing signup route validation", () => {
         confirmPassword: "",
       };
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.statusCode).toBe(400);
-      expect(res.text).toBe("Bad Request");
+      expect(res.statusCode).toBe(HTTP_STATUS_BAD_REQUEST);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     });
   });
 
@@ -31,8 +32,8 @@ describe("Testing signup route validation", () => {
         confirmPassword: "Abcd!1234",
       };
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.statusCode).toEqual(400);
-      expect(res.text).toEqual("Bad Request");
+      expect(res.statusCode).toBe(HTTP_STATUS_BAD_REQUEST);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     });
   });
 
@@ -47,8 +48,8 @@ describe("Testing signup route validation", () => {
         confirmPassword: "Abcd",
       };
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.statusCode).toEqual(400);
-      expect(res.text).toEqual("Bad Request");
+      expect(res.statusCode).toBe(HTTP_STATUS_BAD_REQUEST);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     });
   });
 
@@ -63,8 +64,8 @@ describe("Testing signup route validation", () => {
         confirmPassword: "Abcd!123",
       };
       const res = await request(app).post(SIGNUP_API_ROUTE).send(mockData);
-      expect(res.statusCode).toBe(400);
-      expect(res.text).toBe("Bad Request");
+      expect(res.statusCode).toBe(HTTP_STATUS_BAD_REQUEST);
+      expect(res.text).toBe(HTTP_STATUS_MESSAGES[HTTP_STATUS_BAD_REQUEST]);
     });
   });
 });

@@ -2,6 +2,7 @@ import { pool } from "../../../../application/repositories/database.js";
 import { getUser } from "../../../../userManagement/repositories/dbFunctions/getUser.dbfunctions.js";
 import { getUserDetails } from "../../../../userManagement/repositories/schema/user_schema_v1.0.0.js";
 import { comparePassword } from "../../../../userManagement/utils/hashPassword.js";
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_MESSAGES } from "../../../../userManagement/utils/httpResponses.js";
 
 jest.mock("../../../../application/repositories/database.ts", () => ({
   pool: {
@@ -100,8 +101,8 @@ describe("Testing whether user details are retrieved from database", () => {
       const result = await getUser(mockInputData);
 
       expect(result).toEqual({
-        status: 500,
-        message: "Internal Server Error",
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        message: HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR],
       });
       expect(mockConnection.release).not.toHaveBeenCalled();
     });

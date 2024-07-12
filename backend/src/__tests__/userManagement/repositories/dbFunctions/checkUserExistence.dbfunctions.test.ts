@@ -7,6 +7,10 @@ import {
   duplicateEmailChecker,
   duplicateUsernameChecker,
 } from "../../../../userManagement/repositories/schema/user_schema_v1.0.0.js";
+import {
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_MESSAGES,
+} from "../../../../userManagement/utils/httpResponses.js";
 
 jest.mock("../../../../application/repositories/database.ts", () => ({
   pool: {
@@ -35,8 +39,8 @@ describe("Testing whether a user exists in database", () => {
     jest.clearAllMocks();
   });
 
-  describe("given the email provided does not exist in the database", () => {
-    it("should return false", async () => {
+  describe("given the email is provided ", () => {
+    it("should return false if email does not exist in the database", async () => {
       mockConnection.query.mockResolvedValue(mockFalseQueryResult);
 
       // Call the function with the mock data
@@ -49,10 +53,8 @@ describe("Testing whether a user exists in database", () => {
         mockUserEmail.email,
       ]);
     });
-  });
 
-  describe("given the email provided exists in the database", () => {
-    it("should return true", async () => {
+    it("should return true if email exists in the database", async () => {
       mockConnection.query.mockResolvedValue(mockTrueQueryResult);
 
       const result = await checkEmailExists(mockUserEmail);
@@ -66,8 +68,8 @@ describe("Testing whether a user exists in database", () => {
     });
   });
 
-  describe("given the username provided does not exist in the database", () => {
-    it("should return false", async () => {
+  describe("given the username is provided ", () => {
+    it("should return false if username does not exist in the database", async () => {
       mockConnection.query.mockResolvedValue(mockFalseQueryResult);
 
       // Call the function with the mock data
@@ -81,10 +83,8 @@ describe("Testing whether a user exists in database", () => {
         [mockUsername.username]
       );
     });
-  });
 
-  describe("given the username provided exists in the database", () => {
-    it("should return true", async () => {
+    it("should return true if username exists in the database", async () => {
       mockConnection.query.mockResolvedValue(mockTrueQueryResult);
 
       // Call the function with the mock data
@@ -97,6 +97,24 @@ describe("Testing whether a user exists in database", () => {
         duplicateUsernameChecker,
         [mockUsername.username]
       );
+    });
+  });
+
+  describe("given there are exceptions", () => {
+    it("should return error object", async () => {
+      mockConnection.query.mockRejectedValue(new Error("DB Error"));
+
+      const result = await checkUsernameExists(mockUsername);
+      const result2 = await checkEmailExists(mockUserEmail);
+
+      expect(result).toEqual({
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        message: HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR],
+      });
+      expect(result2).toEqual({
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        message: HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR],
+      });
     });
   });
 });
