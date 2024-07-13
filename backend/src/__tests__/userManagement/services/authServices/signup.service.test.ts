@@ -83,7 +83,7 @@ describe("Testing signup route", () => {
   });
 
   describe("given the password does not get hashed successfully", () => {
-    it("should return 409 and message as Resource exists", async () => {
+    it("should return 500", async () => {
       const errorResponse = {
         status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
         message: HTTP_STATUS_MESSAGES[HTTP_STATUS_INTERNAL_SERVER_ERROR],
