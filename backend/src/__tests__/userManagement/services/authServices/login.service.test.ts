@@ -10,6 +10,21 @@ import {
 import { generateToken } from "../../../../userManagement/utils/tokens/generateToken.js";
 import { validateLoginInputs } from "../../../../userManagement/utils/validations/login.validation.js";
 
+const LOGIN_API_ROUTE = "/auth/login";
+
+const mockData = {
+  email: "test@example.com",
+  password: "testPassword@123",
+};
+const mockUserDetails = {
+  id: "12345-6789",
+  firstName: "John",
+  lastName: "Doe",
+  username: "test",
+  email: "test@example.com",
+  password: "hashedPassword@123",
+};
+
 jest.mock(
   "../../../../userManagement/utils/validations/login.validation.ts",
   () => ({
@@ -31,21 +46,6 @@ jest.mock(
 jest.mock("../../../../userManagement/utils/tokens/generateToken.ts", () => ({
   generateToken: jest.fn(),
 }));
-
-const LOGIN_API_ROUTE = "/auth/login";
-
-const mockData = {
-  email: "test@example.com",
-  password: "testPassword@123",
-};
-const mockUserDetails = {
-  id: "12345-6789",
-  firstName: "John",
-  lastName: "Doe",
-  username: "test",
-  email: "test@example.com",
-  password: "hashedPassword@123",
-};
 
 describe("Testing login route", () => {
   describe("given the validation fails", () => {

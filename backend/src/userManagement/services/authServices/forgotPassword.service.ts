@@ -7,10 +7,9 @@ import {
 } from "../../utils/httpResponses.js";
 import { validateEmail } from "../../utils/validations/email.validation.js";
 import { checkEmailExists } from "../../repositories/dbFunctions/checkUserExistence.dbfunctions.js";
-import sendPasswordResetLink from "../../repositories/dbFunctions/resetPassword.dbfunctions.js";
-import { ResponseType } from "../../models/responseType.js";
+import {sendPasswordResetLink} from "../../repositories/dbFunctions/resetPassword.dbfunctions.js";
 
-const ForgotPssword = async (req: Request, res: Response) => {
+const ForgotPassword = async (req: Request, res: Response) => {
   try {
     const userEmail = req.body;
 
@@ -43,4 +42,4 @@ const ForgotPssword = async (req: Request, res: Response) => {
   }
 };
 
-export default ForgotPssword;
+export default ForgotPassword;

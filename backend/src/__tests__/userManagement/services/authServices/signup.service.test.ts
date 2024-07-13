@@ -14,6 +14,15 @@ import {
 } from "../../../../userManagement/utils/httpResponses.js";
 import { validateSignupInputs } from "../../../../userManagement/utils/validations/signup.validation.js";
 
+const SIGNUP_API_ROUTE = "/auth/signup";
+const mockData = {
+  firstName: "John",
+  lastName: "Doe",
+  username: "test",
+  email: "test@example.com",
+  password: "testPassword@123",
+  confirmPassword: "testPassword@123",
+};
 
 jest.mock(
   "../../../../userManagement/utils/validations/signup.validation.ts",
@@ -33,16 +42,6 @@ jest.mock(
 jest.mock("../../../../userManagement/utils/hashPassword.ts", () => ({
   hashPassword: jest.fn(),
 }));
-
-const SIGNUP_API_ROUTE = "/auth/signup";
-const mockData = {
-  firstName: "John",
-  lastName: "Doe",
-  username: "test",
-  email: "test@example.com",
-  password: "testPassword@123",
-  confirmPassword: "testPassword@123",
-};
 
 describe("Testing signup route", () => {
   describe("given the validation fails", () => {

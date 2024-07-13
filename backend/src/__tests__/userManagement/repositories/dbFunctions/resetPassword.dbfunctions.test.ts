@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { pool } from "../../../../application/repositories/database.js";
-import sendPasswordResetLink from "../../../../userManagement/repositories/dbFunctions/resetPassword.dbfunctions.js";
+import {sendPasswordResetLink} from "../../../../userManagement/repositories/dbFunctions/resetPassword.dbfunctions.js";
 import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_MESSAGES,

@@ -7,7 +7,7 @@ import {
 } from "../../utils/httpResponses.js";
 import { updateUserOTP } from "../schema/user_schema_v1.0.0.js";
 
-const sendPasswordResetLink = async (
+export const sendPasswordResetLink = async (
   otp: string,
   otpExpiry: Date,
   userEmail: { email: string }
@@ -45,5 +45,3 @@ const sendPasswordResetLink = async (
     };
   }
 };
-
-export default sendPasswordResetLink;
